@@ -155,6 +155,8 @@ ALTER TABLE TB_ARTICULOS ADD (
 
 > **Nota:** Estas alteraciones son permanentes y pueden afectar la integridad de los datos existentes. Es recomendable hacer respaldo antes de ejecutarlas.
 
+---
+
 ### 5. Agregar Clave Primaria a Tablas de Datos
 
 La clave primaria es un identificador único para cada registro en una tabla. Se utiliza para garantizar que no haya duplicados y establecer relaciones entre tablas.
@@ -183,6 +185,8 @@ ALTER TABLE TB_DETALLES ADD CONSTRAINT PK_DETALLES
 ```
 
 > **Nota:** Una tabla solo puede tener una clave primaria y las columnas que la componen no pueden contener valores NULL.
+
+---
 
 ### 6. Restricciones (Foreign Key)
 
@@ -222,6 +226,8 @@ ON DELETE SET NULL;                     -- Establece NULL en registros relaciona
 
 > **Nota:** Las llaves foráneas requieren que la columna referenciada sea clave primaria o tenga una restricción UNIQUE en la tabla padre.
 
+---
+
 ### 7. Columnas IDENTITY Oracle
 
 Las columnas IDENTITY permiten generar valores únicos automáticamente para cada nuevo registro, similar a AUTO_INCREMENT en otros sistemas.
@@ -256,3 +262,202 @@ ALTER TABLE TB_ALMACENES MODIFY CODIGO_AL
 
 > **Nota:** Las columnas IDENTITY son automáticamente NOT NULL y no se pueden modificar manualmente sus valores.
 
+---
+
+## Registro en Tablas
+
+### 1. Insertar Registro en Tablas
+
+La sintaxis básica para insertar registros es:
+```sql
+INSERT INTO nombre_tabla (columna1, columna2, ...) 
+    VALUES (valor1, valor2, ...);
+```
+
+#### Insertar registros simples
+```sql
+-- Insertar categorías básicas
+INSERT INTO tb_categorias(CODIGO_CA, DESCRIPCION_CA) 
+    VALUES(1, 'OFICINAS');              -- Categoría para artículos de oficina
+
+INSERT INTO tb_categorias(CODIGO_CA, DESCRIPCION_CA) 
+    VALUES(2, 'HOGARES');               -- Categoría para artículos del hogar
+    
+INSERT INTO tb_categorias(CODIGO_CA, DESCRIPCION_CA) 
+    VALUES(3, 'EVENTOS');               -- Categoría para artículos de eventos
+```
+
+#### Insertar registros con múltiples columnas
+```sql
+-- Insertar medidas con abreviatura
+INSERT INTO tb_medidas(CODIGO_ME, ABREVIATURA_ME, DESCRIPCION_ME)
+    VALUES(1,'UND', 'UNIDADES');        -- Medida para conteo individual
+    
+INSERT INTO tb_medidas(CODIGO_ME, ABREVIATURA_ME, DESCRIPCION_ME)
+    VALUES(2,'MTS', 'METROS');          -- Medida para longitudes
+    
+INSERT INTO tb_medidas(CODIGO_ME, ABREVIATURA_ME, DESCRIPCION_ME)
+    VALUES(3,'LTS', 'LITROS');          -- Medida para volúmenes
+```
+
+#### Insertar registros con claves foráneas
+```sql
+-- Insertar artículos relacionados a categorías y medidas
+INSERT INTO tb_articulos(
+    CODIGO_AR,                          -- ID del artículo
+    DESCRIPCION_AR,                     -- Nombre del producto
+    MARCA_AR,                           -- Marca del producto
+    CODIGO_ME,                          -- Referencia a medidas
+    CODIGO_CA                           -- Referencia a categorías
+) VALUES(
+    1,                                  -- Código único
+    'COMPUTADOR',                       -- Descripción
+    'LENOVO',                           -- Marca
+    1,                                  -- Usa unidades
+    1                                   -- Categoría oficinas
+);
+
+-- Insertar múltiples artículos para hogar
+INSERT INTO tb_articulos(CODIGO_AR, DESCRIPCION_AR, MARCA_AR, CODIGO_ME, CODIGO_CA)
+    VALUES(3, 'REFRIGERADOR', 'LG', 1, 2);      -- Electrodoméstico hogar
+
+INSERT INTO tb_articulos(CODIGO_AR, DESCRIPCION_AR, MARCA_AR, CODIGO_ME, CODIGO_CA)
+    VALUES(4, 'MICROONDAS', 'LG', 1, 2);        -- Electrodoméstico hogar
+```
+
+> **Nota:** Al insertar registros con claves foráneas, asegúrate de que los valores referenciados existan en las tablas padre.
+
+---
+
+### 2. Actualizar Registro en Tablas
+
+La sintaxis básica para actualizar registros es:
+```sql
+UPDATE nombre_tabla 
+SET campo = nuevo_valor 
+[WHERE condición];
+```
+
+#### Actualizar registro específico
+```sql
+-- Actualizar marca de un artículo específico
+UPDATE tb_articulos 
+SET marca_ar = 'CANON'           -- Nuevo valor para la marca
+WHERE codigo_ar = 2;             -- Solo afecta al artículo con código 2
+```
+
+#### Actualizar múltiples registros
+```sql
+-- Actualizar marca para varios artículos
+UPDATE tb_articulos 
+SET marca_ar = 'SAMSUNG'         -- Nueva marca para varios productos
+WHERE codigo_ar IN (3,4);        -- Afecta a los artículos 3 y 4
+```
+
+#### Actualizar usando funciones
+```sql
+-- Actualizar descripción usando concatenación
+UPDATE tb_articulos 
+SET descripcion_ar = CONCAT('* ', descripcion_ar)  -- Agrega asterisco al inicio
+WHERE marca_ar = 'ESTANDAR';                       -- Solo para productos estándar
+```
+
+> **Nota:** Si no se especifica una cláusula WHERE, la actualización afectará a todos los registros de la tabla. Siempre verifica la condición WHERE antes de ejecutar un UPDATE.
+
+---
+
+### 3. Borrar Registro en Tablas
+
+La sintaxis básica para borrar registros es:
+```sql
+DELETE FROM nombre_tabla 
+[WHERE condición];
+```
+
+#### Borrar registros específicos
+```sql
+-- Borrar registros por lista de IDs
+DELETE FROM tb_articulos 
+WHERE codigo_ar IN (5,6);        -- Borra artículos con códigos 5 y 6
+
+-- Borrar registros por comparación
+DELETE FROM tb_articulos 
+WHERE codigo_ar > 4;             -- Borra artículos con código mayor a 4
+
+-- Borrar registros por coincidencia de texto
+DELETE FROM tb_articulos 
+WHERE marca_ar = 'ESTANDAR';     -- Borra todos los artículos de marca estándar
+```
+
+#### Manejo de restricciones al borrar
+```sql
+-- Intento de borrar registro referenciado (generará error)
+DELETE FROM tb_medidas 
+WHERE codigo_me = 1;             -- Error: viola integridad referencial
+
+-- Borrado exitoso de registros no referenciados
+DELETE FROM tb_medidas 
+WHERE codigo_me IN (2,3,4);      -- Éxito: registros sin referencias
+```
+
+> **Nota:** 
+> - Si no se especifica WHERE, se borrarán todos los registros de la tabla
+> - No se pueden borrar registros que están siendo referenciados por otras tablas (FK)
+> - El borrado de registros es permanente y no se puede deshacer
+
+---
+
+### 4. Consulta de Registro en Tablas
+
+La sintaxis básica para consultar registros es:
+```sql
+SELECT [columnas | *] 
+FROM nombre_tabla 
+[WHERE condición];
+```
+
+#### Consultas básicas
+```sql
+-- Consultar todos los campos de una tabla
+SELECT * FROM tb_medidas;              -- Muestra todas las medidas
+
+-- Consultar todos los campos de otra tabla
+SELECT * FROM tb_articulos;            -- Muestra todos los artículos
+```
+
+#### Consultas con filtros
+```sql
+-- Filtrar por valor específico
+SELECT * 
+FROM tb_articulos 
+WHERE codigo_ca = 2;                   -- Solo artículos de categoría 2
+
+-- Seleccionar columnas específicas con filtro
+SELECT codigo_ar,                      -- Solo muestra estas tres columnas
+       descripcion_ar,
+       marca_ar
+FROM tb_articulos 
+WHERE codigo_ca = 2;                   -- Solo artículos de categoría 2
+```
+
+#### Consultas con operadores lógicos
+```sql
+-- Filtrar excluyendo valores
+SELECT *
+FROM tb_articulos 
+WHERE NOT marca_ar IN ('LENOVO', 'CANON');   -- Excluye estas marcas
+
+-- Búsqueda por patrón
+SELECT *
+FROM tb_articulos 
+WHERE descripcion_ar LIKE 'R%';              -- Productos que empiezan con 'R'
+```
+
+> **Nota:** 
+> - El asterisco (*) selecciona todas las columnas
+> - LIKE permite búsquedas con comodines (% cualquier cantidad de caracteres)
+> - IN permite especificar múltiples valores posibles
+
+---
+
+## Operadores en oracle
