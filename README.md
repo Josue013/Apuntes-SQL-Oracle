@@ -106,7 +106,8 @@ DROP TABLE TB_MEDIDAS;
 DROP TABLE TB_CATEGORIAS;
 ```
 
-> **Nota:** Es importante borrar las tablas en el orden correcto para evitar errores por restricciones de integridad referencial.
+> [!NOTE] 
+> Es importante borrar las tablas en el orden correcto para evitar errores por restricciones de integridad referencial.
 
 ---
 
@@ -153,7 +154,8 @@ ALTER TABLE TB_ARTICULOS ADD (
 );
 ```
 
-> **Nota:** Estas alteraciones son permanentes y pueden afectar la integridad de los datos existentes. Es recomendable hacer respaldo antes de ejecutarlas.
+> [!NOTE] 
+> Estas alteraciones son permanentes y pueden afectar la integridad de los datos existentes. Es recomendable hacer respaldo antes de ejecutarlas.
 
 ---
 
@@ -184,7 +186,8 @@ ALTER TABLE TB_DETALLES ADD CONSTRAINT PK_DETALLES
     PRIMARY KEY (CODIGO_AR, CODIGO_CA);    -- Crea PK usando combinación de columnas
 ```
 
-> **Nota:** Una tabla solo puede tener una clave primaria y las columnas que la componen no pueden contener valores NULL.
+> [!NOTE] 
+> Una tabla solo puede tener una clave primaria y las columnas que la componen no pueden contener valores NULL.
 
 ---
 
@@ -224,7 +227,8 @@ REFERENCES TB_CATEGORIAS(CODIGO_CA)
 ON DELETE SET NULL;                     -- Establece NULL en registros relacionados
 ```
 
-> **Nota:** Las llaves foráneas requieren que la columna referenciada sea clave primaria o tenga una restricción UNIQUE en la tabla padre.
+> [!NOTE] 
+> Las llaves foráneas requieren que la columna referenciada sea clave primaria o tenga una restricción UNIQUE en la tabla padre.
 
 ---
 
@@ -260,7 +264,8 @@ ALTER TABLE TB_ALMACENES MODIFY CODIGO_AL
     GENERATED ALWAYS AS IDENTITY;    -- Convierte en autoincremental
 ```
 
-> **Nota:** Las columnas IDENTITY son automáticamente NOT NULL y no se pueden modificar manualmente sus valores.
+> [!NOTE] 
+> Las columnas IDENTITY son automáticamente NOT NULL y no se pueden modificar manualmente sus valores.
 
 ---
 
@@ -325,7 +330,8 @@ INSERT INTO tb_articulos(CODIGO_AR, DESCRIPCION_AR, MARCA_AR, CODIGO_ME, CODIGO_
     VALUES(4, 'MICROONDAS', 'LG', 1, 2);        -- Electrodoméstico hogar
 ```
 
-> **Nota:** Al insertar registros con claves foráneas, asegúrate de que los valores referenciados existan en las tablas padre.
+> [!NOTE] 
+> Al insertar registros con claves foráneas, asegúrate de que los valores referenciados existan en las tablas padre.
 
 ---
 
@@ -362,7 +368,8 @@ SET descripcion_ar = CONCAT('* ', descripcion_ar)  -- Agrega asterisco al inicio
 WHERE marca_ar = 'ESTANDAR';                       -- Solo para productos estándar
 ```
 
-> **Nota:** Si no se especifica una cláusula WHERE, la actualización afectará a todos los registros de la tabla. Siempre verifica la condición WHERE antes de ejecutar un UPDATE.
+> [!NOTE] 
+> Si no se especifica una cláusula WHERE, la actualización afectará a todos los registros de la tabla. Siempre verifica la condición WHERE antes de ejecutar un UPDATE.
 
 ---
 
@@ -400,7 +407,7 @@ DELETE FROM tb_medidas
 WHERE codigo_me IN (2,3,4);      -- Éxito: registros sin referencias
 ```
 
-> **Nota:** 
+> [!NOTE] 
 > - Si no se especifica WHERE, se borrarán todos los registros de la tabla
 > - No se pueden borrar registros que están siendo referenciados por otras tablas (FK)
 > - El borrado de registros es permanente y no se puede deshacer
@@ -453,7 +460,7 @@ FROM tb_articulos
 WHERE descripcion_ar LIKE 'R%';              -- Productos que empiezan con 'R'
 ```
 
-> **Nota:** 
+> [!NOTE]
 > - El asterisco (*) selecciona todas las columnas
 > - LIKE permite búsquedas con comodines (% cualquier cantidad de caracteres)
 > - IN permite especificar múltiples valores posibles
