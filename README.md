@@ -746,3 +746,36 @@ WHERE (nota1 >= 9 AND nota1 <= 13)  -- Nota1 entre 9 y 13
 > - NOT afecta a la condición que le sigue
 
 ---
+
+## Commit y Rollback
+
+### COMMIT
+El comando COMMIT guarda permanentemente todos los cambios realizados en la transacción actual.
+
+```sql
+-- Insertar un nuevo registro
+INSERT INTO tb_medidas VALUES(2,'KGS', 'KILOGRAMOS');
+
+-- Guardar los cambios permanentemente
+COMMIT;  -- Los cambios ya no se pueden deshacer
+```
+
+### ROLLBACK
+El comando ROLLBACK deshace todos los cambios no confirmados desde el último COMMIT.
+
+```sql
+-- Insertar un registro (cambio temporal)
+INSERT INTO tb_medidas VALUES(3,'LBS', 'LIBRAS');
+
+-- Si nos arrepentimos, podemos deshacer
+ROLLBACK;  -- El registro no se guardará
+```
+
+> [!NOTE]  
+> - COMMIT hace permanentes los cambios
+> - ROLLBACK deshace cambios no confirmados
+> - Los cambios después de un COMMIT no se pueden deshacer con ROLLBACK
+> - Una sesión nueva siempre puede ver los cambios confirmados con COMMIT
+
+---
+
