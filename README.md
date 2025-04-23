@@ -468,3 +468,281 @@ WHERE descripcion_ar LIKE 'R%';              -- Productos que empiezan con 'R'
 ---
 
 ## Operadores en oracle
+
+### 1. Operadores Aritméticos 
+
+Los operadores aritmeticos permiten realizar cálculos con valores numéricos.
+
+Son:
+
+- multiplicación `(*)`
+- división       `(/)`
+- suma           `(+)`
+- resta          `(-)`
+
+Primero creamos una tabla de ejemplo para demostrar los operadores:
+```sql
+-- Crear tabla de notas
+CREATE TABLE tb_notas_alumnos(
+    CODIGO_AL NUMBER(3,0),           -- ID del alumno
+    NOMBRE_AL VARCHAR2(50),          -- Nombre del alumno
+    CURSO VARCHAR2(30),              -- Nombre del curso
+    NOTA1 NUMBER(2,0),              -- Primera nota
+    NOTA2 NUMBER(2,0),              -- Segunda nota
+    NOTA3 NUMBER(2,0),              -- Tercera nota
+    PROMEDIO NUMBER(5,2)            -- Promedio final
+);
+
+-- Insertar datos de prueba
+INSERT INTO tb_notas_alumnos VALUES(1,'JOSUE','IPC2',13,14,15,0);
+INSERT INTO tb_notas_alumnos VALUES(2,'JOSEPH','IPC2',10,12,7,0);
+INSERT INTO tb_notas_alumnos VALUES(3,'ANDREY','IPC2',15,15,15,0);
+```
+
+#### Ejemplos con Suma (+)
+```sql
+-- Suma simple de notas
+SELECT codigo_al, nombre_al, NOTA1+NOTA2+NOTA3 
+FROM tb_notas_alumnos;
+
+-- Suma con alias de columna
+SELECT codigo_al, nombre_al, 
+       (NOTA1+NOTA2+NOTA3) AS SUMATORIA_NOTAS 
+FROM tb_notas_alumnos;
+```
+
+#### Ejemplos con Resta (-)
+```sql
+-- Resta simple
+SELECT codigo_al, nombre_al, 
+       (NOTA1+NOTA2)-NOTA3 
+FROM tb_notas_alumnos;
+
+-- Resta con múltiples alias
+SELECT codigo_al,
+       nombre_al,
+       (NOTA1+NOTA2) AS ACOMULADO_NOTA1_NOTA2,
+       NOTA3,
+       (NOTA1+NOTA2)-NOTA3 AS ACOMULADO_MENOS_NOTA3
+FROM tb_notas_alumnos;
+```
+
+#### Ejemplos con Multiplicación (*)
+```sql
+-- Multiplicar dos notas
+SELECT codigo_al, 
+       nombre_al,
+       nota1*nota2 AS PRODUCTO_NOTAS
+FROM tb_notas_alumnos;
+```
+
+#### Ejemplos con División (/)
+```sql
+-- División simple
+SELECT codigo_al, 
+       nombre_al,
+       nota1/nota2 AS DIVISION_NOTAS
+FROM tb_notas_alumnos;
+
+-- Cálculo de promedio simple
+SELECT codigo_al,
+       nombre_al,
+       curso,
+       (nota1+nota2+nota3)/3 AS PROMEDIO
+FROM tb_notas_alumnos;
+
+-- Promedio redondeado
+SELECT codigo_al,
+       nombre_al,
+       curso,
+       ROUND(((nota1+nota2+nota3)/3),2) AS PROMEDIO
+FROM tb_notas_alumnos;
+```
+
+> [!NOTE] 
+> - ROUND() redondea al número de decimales especificado
+> - AS permite renombrar las columnas resultantes
+> - Los operadores pueden combinarse en una misma expresión
+
+---
+
+### 2. Operadores Relacionales o de Comparación
+
+Los operadores relacionales permiten comparar valores y devolver resultados booleanos (verdadero o falso).
+
+Los operadores son:
+
+- igual a `=`
+- diferente de `<>` o `!=`
+- mayor que `>`
+- menor que `<`
+- mayor o igual que `>=`
+- menor o igual que `<=`
+
+Utilizaremos la tabla de notas creada anteriormente para mostrar ejemplos de cada operador relacional.
+
+#### Igual a (=)
+```sql
+-- Buscar notas exactas
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE nota1 = 15;    -- Muestra alumnos con nota1 igual a 15
+```
+
+#### Diferente de (<> o !=)
+```sql
+-- Buscar notas diferentes
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE nota1 <> 15;   -- Muestra alumnos con nota1 diferente de 15
+-- También se puede usar !=
+-- WHERE nota1 != 15;
+```
+
+#### Mayor que (>)
+```sql
+-- Buscar notas superiores
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE nota1 > 12;    -- Muestra alumnos con nota1 mayor a 12
+```
+
+#### Menor que (<)
+```sql
+-- Buscar notas inferiores
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE nota1 < 15;    -- Muestra alumnos con nota1 menor a 15
+```
+
+#### Mayor o igual que (>=)
+```sql
+-- Buscar notas mayores o iguales
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE nota1 >= 13;   -- Muestra alumnos con nota1 mayor o igual a 13
+```
+
+#### Menor o igual que (<=)
+```sql
+-- Buscar notas menores o iguales
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE nota1 <= 13;   -- Muestra alumnos con nota1 menor o igual a 13
+```
+
+> [!NOTE] 
+> - Los operadores relacionales se usan principalmente en la cláusula WHERE
+> - Pueden combinarse con operadores lógicos (AND, OR)
+> - Son útiles para filtrar datos según condiciones específicas
+
+---
+
+### 3. Operadores Concatenación
+
+
+Para concatenar cadenas de texto en Oracle, se utiliza el operador `||` (doble barra vertical).
+
+#### Concatenación simple
+```sql
+-- Unir nombre del alumno con el curso
+SELECT codigo_al,
+       nombre_al || ' - ' || curso        -- Concatena con guión entre textos
+FROM tb_notas_alumnos;
+```
+
+#### Concatenación con alias
+```sql
+-- Unir textos y asignar nombre a la columna resultante
+SELECT codigo_al,
+       (nombre_al || ' - ' || curso) AS NOMBRE_CURSO    -- Nombra la columna concatenada
+FROM tb_notas_alumnos;
+```
+
+> [!NOTE] 
+> - El operador `||` puede unir dos o más cadenas
+> - Se pueden incluir espacios y caracteres especiales entre comillas simples
+> - El resultado puede asignarse a un alias usando AS
+> - Los paréntesis ayudan a agrupar las concatenaciones
+
+---
+
+### 4. Operadores Lógicos
+
+Los operadores lógicos permiten combinar condiciones en consultas SQL. Los más comunes son:
+
+- AND: ambas condiciones deben ser verdaderas
+- OR: al menos una condición debe ser verdadera
+- NOT: invierte el resultado de una condición (verdadero a falso y viceversa)
+- (): agrupa condiciones para evaluar primero lo que está dentro de los paréntesis
+
+Tabla de verdad operador AND:
+
+| OP1 | OP2 | SALIDA |
+| --- | --- | ------ |
+| V   | V   | V      |
+| V   | F   | F      |
+| F   | V   | F      |
+| F   | F   | F      |
+
+Tabla de verdad operador OR:
+
+| OP1 | OP2 | SALIDA |
+| --- | --- | ------ |
+| V   | V   | V      |
+| V   | F   | V      |
+| F   | V   | V      |
+| F   | F   | F      |
+
+Tabla de verdad operador NOT:
+
+| OP1 | SALIDA |
+| --- | ------ |
+| V   | F      |
+| F   | V      |
+
+#### Operador AND
+```sql
+-- Buscar notas que cumplan dos condiciones
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE nota1 > 13 AND nota2 > 13;    -- Ambas notas deben ser mayores a 13
+
+-- Otro ejemplo con AND
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE nota1 >= 13 AND nota2 >= 13;  -- Ambas notas deben ser 13 o más
+```
+
+#### Operador OR
+```sql
+-- Buscar notas que cumplan al menos una condición
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE nota2 = 14 OR nota3 > 10;     -- Nota2 es 14 o nota3 mayor a 10
+```
+
+#### Operador NOT
+```sql
+-- Invertir una condición
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE NOT nota1 >= 15;              -- Notas menores a 15 (invierte >= 15)
+```
+
+#### Combinación de operadores con paréntesis
+```sql
+-- Combinar múltiples condiciones
+SELECT * 
+FROM tb_notas_alumnos 
+WHERE (nota1 >= 9 AND nota1 <= 13)  -- Nota1 entre 9 y 13
+   OR nota2 > 12;                   -- O nota2 mayor a 12
+```
+
+> [!NOTE]  
+> - Los paréntesis determinan el orden de evaluación
+> - Se pueden combinar múltiples operadores lógicos
+> - AND tiene precedencia sobre OR
+> - NOT afecta a la condición que le sigue
+
+---
