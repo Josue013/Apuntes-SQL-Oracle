@@ -779,3 +779,195 @@ ROLLBACK;  -- El registro no se guardará
 
 ---
 
+## Tipos de Funciones
+
+### 1. Funciones de String o Cadena
+
+Las funciones de cadena permiten manipular y transformar texto en Oracle.
+
+#### Tabla DUAL
+```sql
+-- DUAL es una tabla especial de una sola fila útil para pruebas
+SELECT * FROM dual;                    -- Muestra la única fila de DUAL
+SELECT 'Hola Mundo' FROM dual;         -- Muestra texto literal
+```
+
+#### Funciones básicas de texto
+```sql
+-- Concatenación
+SELECT CONCAT('Hola Josué', ' Como estas?') FROM dual;   -- Une dos cadenas
+
+-- Conversión de caracteres
+SELECT chr(64) FROM dual;              -- Convierte ASCII 64 a '@'
+
+-- Transformación de mayúsculas/minúsculas
+SELECT initcap('hola isra') FROM dual; -- Primera letra en mayúscula
+SELECT upper('hola isra') FROM dual;   -- Todo a mayúsculas
+SELECT lower('HOLA ISRA') FROM dual;   -- Todo a minúsculas
+```
+
+#### Funciones de relleno
+```sql
+-- Relleno izquierdo (LPAD)
+SELECT LPAD('JOSUE',10,'x') FROM dual;         -- Rellena con 'x' a la izquierda
+SELECT CONCAT('FACTURA-', 
+       LPAD('1',5,'0')) FROM dual;             -- Útil para códigos con ceros
+
+-- Relleno derecho (RPAD)
+SELECT RPAD('JOSUE',10,'x') FROM dual;         -- Rellena con 'x' a la derecha
+SELECT CONCAT(RPAD('P-',10,'0'),'1') FROM dual;-- Útil para formateo de texto
+```
+
+#### Funciones de limpieza
+```sql
+-- Eliminación de espacios
+SELECT CONCAT(
+    RTRIM('JOSUE         '),           -- Elimina espacios a la derecha
+    LTRIM('         NABI')            -- Elimina espacios a la izquierda
+) FROM dual;
+
+-- Reemplazo de caracteres
+SELECT REPLACE('LLL.YOUTUBE.COM',      -- Reemplaza caracteres específicos
+    'L','W') FROM DUAL;                -- Cambia 'L' por 'W'
+```
+
+#### Funciones de extracción y medición
+```sql
+-- Extracción de subcadenas
+SELECT SUBSTR('Curso de bases de datos',
+    10, 14) FROM DUAL;                 -- Extrae porción del texto
+
+-- Longitud de cadena
+SELECT LENGTH('Curso de bases de datos') FROM DUAL;  -- Cuenta caracteres
+
+-- Búsqueda de posición
+SELECT INSTR('Curso de bases de datos', 
+    'de') FROM DUAL;                   -- Encuentra posición de 'de'
+```
+
+#### Funciones de traducción
+```sql
+-- Traducción de caracteres
+SELECT TRANSLATE('Curso de bases de datos',
+    'oes','035') FROM DUAL;            -- Reemplaza múltiples caracteres
+```
+
+> [!NOTE]
+> - DUAL es útil para probar funciones sin necesidad de tablas reales
+> - Las funciones pueden anidarse para operaciones más complejas
+> - La mayoría de funciones son sensibles a mayúsculas/minúsculas
+> - Los índices en SUBSTR empiezan en 1, no en 0
+
+---
+
+### 2. Funciones Numéricas
+
+Las funciones numéricas permiten realizar operaciones matemáticas y estadísticas con números.
+
+#### Funciones de Redondeo
+```sql
+-- Redondeo a decimales específicos
+SELECT ROUND(135.657,2) FROM DUAL;     -- Redondea a 135.66
+
+-- Truncamiento a decimales específicos
+SELECT TRUNC(135.657,2) FROM DUAL;     -- Trunca a 135.65
+```
+
+#### Funciones Matemáticas
+```sql
+-- Cálculo de módulo (residuo)
+SELECT MOD(11,3) FROM DUAL;            -- Devuelve 2 (residuo de 11/3)
+```
+
+#### Funciones de Agregación
+```sql
+-- Contar registros
+SELECT COUNT(CODIGO_AR) AS TOTAL_REGISTRO 
+FROM tb_articulos;                     -- Cuenta total de artículos
+
+-- Suma de valores
+SELECT SUM(CODIGO_AR) 
+FROM tb_articulos;                     -- Suma todos los códigos
+
+-- Valor mínimo
+SELECT MIN(CODIGO_AR) 
+FROM tb_articulos;                     -- Obtiene el código más bajo
+
+-- Valor máximo
+SELECT MAX(CODIGO_AR) 
+FROM tb_articulos;                     -- Obtiene el código más alto
+
+-- Promedio
+SELECT AVG(CODIGO_AR) 
+FROM tb_articulos;                     -- Calcula el promedio de códigos
+```
+
+> [!NOTE] 
+> - ROUND redondea al decimal más cercano
+> - TRUNC simplemente corta los decimales
+> - Las funciones de agregación trabajan sobre conjuntos de datos
+> - COUNT ignora valores NULL por defecto
+> - AVG calcula el promedio solo de valores no nulos
+
+---
+
+### 3. Funciones Fecha y Hora
+
+Las funciones de fecha y hora permiten manipular y obtener información temporal en Oracle.
+
+#### Funciones de fecha actual
+```sql
+-- Obtener fecha actual
+SELECT CURRENT_DATE FROM DUAL;          -- Fecha actual
+SELECT SYSDATE FROM DUAL;              -- Fecha y hora actual del sistema
+
+-- Obtener timestamp actual
+SELECT CURRENT_TIMESTAMP FROM DUAL;     -- Timestamp con zona horaria
+SELECT SYSTIMESTAMP FROM DUAL;         -- Timestamp del sistema
+```
+
+#### Funciones de manipulación de meses
+```sql
+-- Agregar meses a una fecha
+SELECT ADD_MONTHS(CURRENT_DATE, 1) FROM DUAL;      -- Suma 1 mes a fecha actual
+SELECT ADD_MONTHS('25/04/2025', 2) FROM DUAL;      -- Suma 2 meses a fecha específica
+
+-- Obtener último día del mes
+SELECT LAST_DAY('25/04/2025') FROM DUAL;           -- Muestra 30/04/2025
+
+-- Calcular diferencia en meses
+SELECT MONTHS_BETWEEN('1/07/2025', 
+    '1/01/2025') FROM DUAL;                        -- Muestra 6 meses
+```
+
+#### Funciones de manipulación de días
+```sql
+-- Obtener próximo día específico
+SELECT NEXT_DAY('25/04/2025', 'MARTES') FROM DUAL; -- Próximo martes después del 25/04
+
+-- Operaciones con días
+SELECT to_date('19/12/2022')-2 FROM DUAL;          -- Resta 2 días a la fecha
+```
+
+#### Funciones de extracción
+```sql
+-- Extraer componentes de fecha
+SELECT EXTRACT(YEAR FROM SYSDATE) FROM DUAL;        -- Obtiene el año
+SELECT EXTRACT(MONTH FROM SYSDATE) FROM DUAL;       -- Obtiene el mes
+SELECT EXTRACT(DAY FROM SYSDATE) FROM DUAL;         -- Obtiene el día
+```
+
+#### Funciones de formato
+```sql
+-- Formatear fecha como texto
+SELECT CONCAT(to_char(SYSDATE), 
+    ' Fecha del sistema') AS Fecha_actual FROM DUAL; -- Concatena con texto
+```
+
+> [!NOTE] 
+> - SYSDATE incluye hora, CURRENT_DATE solo fecha
+> - Los formatos de fecha pueden variar según la configuración regional
+> - EXTRACT permite obtener partes específicas de una fecha
+> - TO_CHAR convierte fechas a texto formateado
+
+---
