@@ -971,3 +971,107 @@ SELECT CONCAT(to_char(SYSDATE),
 > - TO_CHAR convierte fechas a texto formateado
 
 ---
+
+## Relaciones de datos entre tablas
+
+### 1. INNER JOIN
+
+El INNER JOIN combina registros de dos o más tablas cuando hay coincidencia en los campos relacionados.
+
+#### Sintaxis básica
+```sql
+SELECT tabla1.campo1, tabla2.campo2
+FROM tabla1
+INNER JOIN tabla2 ON tabla1.campo = tabla2.campo;
+```
+
+#### Ejemplo completo con múltiples tablas
+```sql
+-- Consulta que relaciona artículos con sus categorías y medidas
+SELECT 
+    tb_articulos.codigo_ar,           -- Código del artículo
+    tb_articulos.descripcion_ar,      -- Descripción del artículo
+    tb_articulos.marca_ar,            -- Marca del artículo
+    tb_medidas.descripcion_me,        -- Descripción de la medida
+    tb_categorias.descripcion_ca,     -- Descripción de la categoría
+    tb_articulos.stock_actual,        -- Stock disponible
+    tb_articulos.fecha_registro       -- Fecha de registro
+FROM tb_articulos
+INNER JOIN tb_categorias             -- Unión con tabla categorías
+    ON tb_articulos.codigo_ca = tb_categorias.codigo_ca
+INNER JOIN tb_medidas               -- Unión con tabla medidas
+    ON tb_articulos.codigo_me = tb_medidas.codigo_me;
+```
+
+> [!NOTE]  
+> - INNER JOIN solo muestra registros donde hay coincidencia en ambas tablas
+> - Se pueden encadenar múltiples INNER JOIN
+> - Es recomendable usar alias para hacer el código más legible
+> - El orden de las tablas en los JOIN puede afectar el rendimiento
+
+---
+
+### 2. LEFT JOIN
+
+El LEFT JOIN retorna todos los registros de la tabla izquierda y los registros coincidentes de la tabla derecha. Si no hay coincidencia, los campos de la tabla derecha contendrán NULL.
+
+#### Sintaxis básica
+```sql
+SELECT tabla_izq.campo1, tabla_der.campo2
+FROM tabla_izq
+LEFT JOIN tabla_der ON tabla_izq.campo = tabla_der.campo;
+```
+
+#### Ejemplo con categorías y artículos
+```sql
+-- Consulta que muestra todas las categorías y sus artículos (si existen)
+SELECT 
+    tb_categorias.codigo_ca,       -- Código de categoría
+    tb_categorias.descripcion_ca,  -- Nombre de la categoría
+    tb_articulos.descripcion_ar,   -- Descripción del artículo (puede ser NULL)
+    tb_articulos.marca_ar         -- Marca del artículo (puede ser NULL)
+FROM tb_categorias
+LEFT JOIN tb_articulos           -- Mantiene todas las categorías
+    ON tb_categorias.codigo_ca = tb_articulos.codigo_ca;
+```
+
+> [!NOTE]  
+> - Muestra TODAS las categorías, tengan o no artículos asociados
+> - Las categorías sin artículos mostrarán NULL en los campos de artículos
+> - Útil para encontrar registros "huérfanos" o sin relaciones
+> - El orden de las tablas es importante en LEFT JOIN
+
+---
+
+### 3. RIGHT JOIN
+
+El RIGHT JOIN retorna todos los registros de la tabla derecha y los registros coincidentes de la tabla izquierda. Es el opuesto al LEFT JOIN.
+
+#### Sintaxis básica
+```sql
+SELECT tabla1.campo1, tabla2.campo2
+FROM tabla1
+RIGHT JOIN tabla2 ON tabla1.campo = tabla2.campo;
+```
+
+#### Ejemplo con artículos y medidas usando alias
+```sql
+-- Consulta que muestra todas las medidas y sus artículos (si existen)
+SELECT 
+    A.codigo_ar,          -- Código del artículo (puede ser NULL)
+    A.descripcion_ar,     -- Descripción del artículo (puede ser NULL)
+    A.marca_ar,          -- Marca del artículo (puede ser NULL)
+    B.descripcion_me     -- Descripción de la medida (siempre tiene valor)
+FROM tb_articulos A      -- Alias A para tabla artículos
+RIGHT JOIN tb_medidas B  -- Alias B para tabla medidas
+    ON A.codigo_me = B.codigo_me;
+```
+
+> [!NOTE] 
+> - Muestra TODAS las medidas, tengan o no artículos asociados
+> - Los artículos sin medidas mostrarán NULL en sus campos
+> - Los alias (A, B) hacen el código más corto y legible
+> - RIGHT JOIN es menos común que LEFT JOIN pero cumple el mismo propósito invertido
+
+---
+
