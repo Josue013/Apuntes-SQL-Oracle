@@ -1281,3 +1281,179 @@ GROUP BY curso;                         -- Agrupa por curso
 
 ---
 
+## Procedimientos Almacenados
+
+### 1. Introducción
+Un procedimiento almacenado es:
+- Un conjunto de sentencias SQL
+- Un conjunto de tareas o procesos
+- Un conjunto de instrucciones codificadas
+- Una unidad de código reutilizable
+
+Se utilizan principalmente para operaciones:
+- INSERT
+- UPDATE
+- DELETE
+
+### 2. Sintaxis Básica
+```sql
+CREATE OR REPLACE PROCEDURE nombre_procedimiento (parametro IN tipo_datos)
+    AS 
+      variable_local tipo;
+    BEGIN
+      -- instrucciones
+    END;
+```
+
+### 3. Ejemplo Básico
+```sql
+-- Procedimiento simple para insertar una medida
+CREATE PROCEDURE INSERTAR_UN_REGISTRO_ME
+AS
+BEGIN
+    INSERT INTO tb_medidas(codigo_me, abreviatura_me, descripcion_me)
+    VALUES(3, 'LT', 'LITROS');
+    COMMIT;
+END;
+
+-- Ejecutar el procedimiento
+EXECUTE INSERTAR_UN_REGISTRO_ME;
+```
+
+### 4. Procedimiento con Múltiples Operaciones
+```sql
+-- Procedimiento que realiza INSERT y UPDATE
+CREATE PROCEDURE CRUD_MEDIDAS_CATEGORIAS
+AS
+BEGIN
+    -- Insertar nueva medida
+    INSERT INTO tb_medidas(codigo_me, abreviatura_me, descripcion_me)
+    VALUES(4, 'MT', 'METROS');
+    
+    -- Actualizar categoría existente
+    UPDATE tb_categorias 
+    SET descripcion_ca='EVENTOS 2025'
+    WHERE codigo_ca=3;
+    
+    COMMIT;
+END;
+```
+
+### 5. Tipos de Parámetros
+
+1. **Parámetros IN**
+   - Envían valores al procedimiento
+   - No pueden ser modificados dentro del procedimiento
+   - Son el tipo por defecto
+
+2. **Parámetros OUT**
+   - Devuelven valores del procedimiento
+   - Similar al return en funciones
+   - Se modifican dentro del procedimiento
+
+3. **Parámetros IN OUT**
+   - Combinación de IN y OUT
+   - Pueden enviar y recibir valores
+   - Se pueden modificar dentro del procedimiento
+
+#### Sintaxis con Parámetros
+```sql
+CREATE OR REPLACE PROCEDURE nombre_procedimiento
+(
+    param1 [IN|OUT|IN OUT] tipo,
+    param2 [IN|OUT|IN OUT] tipo
+)
+IS/AS
+    -- Variables locales
+BEGIN
+    -- Cuerpo del procedimiento
+EXCEPTION
+    -- Manejo de excepciones
+END nombre_procedimiento;
+```
+
+### 6. Ejemplos con Parámetros
+
+#### Procedimiento con Parámetros IN
+```sql
+-- Actualizar categoría usando parámetros
+CREATE OR REPLACE PROCEDURE ACTUALIZAR_CA(
+    pCodigo IN NUMBER, 
+    pDescripcion IN VARCHAR2)
+AS
+BEGIN
+    UPDATE tb_categorias 
+    SET descripcion_ca = pDescripcion
+    WHERE codigo_ca = pCodigo;
+    COMMIT;
+END;
+
+-- Ejemplos de uso
+EXECUTE ACTUALIZAR_CA(3,'EVENTOS ESPECIALES');
+EXECUTE ACTUALIZAR_CA(4,'EVENTOS GENERALES');
+```
+
+#### Procedimiento con Múltiples Parámetros
+```sql
+-- Insertar artículo con todos sus campos
+CREATE OR REPLACE PROCEDURE GUARDAR_AR(
+    pCodigo_ar NUMBER,
+    pDescripcion_ar VARCHAR2,
+    pMarca VARCHAR2,
+    pCodigo_me NUMBER,
+    pCodigo_ca NUMBER,
+    pStock_Actual NUMBER,
+    pFecha_Registro DATE,
+    pActivo NUMBER)
+AS
+BEGIN
+    INSERT INTO tb_articulos VALUES(
+        pCodigo_ar, pDescripcion_ar, pMarca,
+        pCodigo_me, pCodigo_ca, pStock_Actual,
+        pFecha_Registro, pActivo
+    );
+    COMMIT;
+END;
+```
+
+#### Procedimiento con Parámetro OUT
+```sql
+-- Buscar nota de alumno
+CREATE OR REPLACE PROCEDURE BUSCAR_NOTA_AL(
+    pCODIGO_AL IN NUMBER,
+    pNOTA1 OUT NUMBER)
+AS
+BEGIN
+    SELECT NOTA1 INTO pNOTA1
+    FROM TB_NOTAS_ALUMNOS 
+    WHERE CODIGO_AL = pCODIGO_AL;
+END;
+
+-- Uso con variables
+VAR vNOTA1 NUMBER;
+EXECUTE BUSCAR_NOTA_AL(2, :vNOTA1);
+PRINT vNOTA1;
+```
+
+#### Procedimiento con Parámetro IN OUT
+```sql
+-- Buscar descripción de medida
+CREATE PROCEDURE BUSCAR_DESCRIPCION_ME(
+    p01 IN OUT VARCHAR2)
+AS
+BEGIN
+    SELECT DESCRIPCION_ME INTO p01
+    FROM TB_MEDIDAS
+    WHERE ABREVIATURA_ME = p01;
+END;
+```
+
+> [!NOTE]  
+> - Los procedimientos pueden tener múltiples parámetros de diferentes tipos
+> - COMMIT debe usarse para hacer permanentes los cambios
+> - Las variables con ':' son variables de enlace (bind variables)
+> - Es importante manejar excepciones en procedimientos productivos
+
+---
+
+
