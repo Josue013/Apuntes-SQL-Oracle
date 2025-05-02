@@ -1227,4 +1227,57 @@ SELECT * FROM VISTA_ARTICULOS;
 
 ---
 
+## Agrupamiento de Datos de Tablas
+
+GROUP BY permite agrupar filas que tienen los mismos valores en las columnas especificadas y aplicar funciones de agregación a cada grupo.
+
+### Casos de uso comunes:
+1. Conteo de registros por grupo
+2. Sumas totales por categoría
+3. Promedios por grupo
+4. Estadísticas agrupadas
+5. Análisis de datos resumidos
+
+### Ejemplos prácticos
+
+#### Contar artículos por categoría
+```sql
+-- Cuenta cuántos artículos hay en cada categoría
+SELECT 
+    a.descripcion_ca,                    -- Nombre de la categoría
+    COUNT(b.descripcion_ar) AS TOTAL_ARTICULOS   -- Cuenta artículos
+FROM tb_categorias a
+INNER JOIN tb_articulos b 
+    ON a.codigo_ca = b.codigo_ca
+GROUP BY a.descripcion_ca;              -- Agrupa por categoría
+```
+
+#### Contar artículos por marca
+```sql
+-- Cuenta cuántos artículos hay de cada marca
+SELECT 
+    marca_ar,                           -- Nombre de la marca
+    COUNT(descripcion_ar) AS total_articulos  -- Cuenta artículos
+FROM tb_articulos
+GROUP BY marca_ar;                      -- Agrupa por marca
+```
+
+#### Sumar notas por curso
+```sql
+-- Suma todas las notas1 por curso
+SELECT 
+    curso,                              -- Nombre del curso
+    SUM(NOTA1) AS total_suma_nota1     -- Suma de todas las nota1
+FROM tb_notas_alumnos
+GROUP BY curso;                         -- Agrupa por curso
+```
+
+> [!NOTE] 
+> - GROUP BY debe incluir todas las columnas no agregadas en el SELECT
+> - Se puede combinar con funciones de agregación (COUNT, SUM, AVG, etc.)
+> - Útil para generar reportes resumidos
+> - Se puede usar con HAVING para filtrar grupos
+> - El orden de las columnas en GROUP BY no afecta el resultado
+
+---
 
