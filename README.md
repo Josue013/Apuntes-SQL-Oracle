@@ -1075,3 +1075,156 @@ RIGHT JOIN tb_medidas B  -- Alias B para tabla medidas
 
 ---
 
+## Procesos Orde By y Cláusula Where
+
+### 1. SELECT ORDER BY
+
+ORDER BY permite ordenar los resultados de una consulta según uno o más campos.
+
+#### Ordenamiento básico descendente
+```sql
+-- Ordenar por código de forma descendente
+SELECT *
+FROM tb_articulos
+ORDER BY codigo_ar DESC;    -- Mayor a menor
+```
+
+#### Ordenamiento ascendente (predeterminado)
+```sql
+-- Ordenar por marca alfabéticamente
+SELECT *
+FROM tb_articulos
+ORDER BY marca_ar;          -- ASC es implícito si no se especifica
+```
+
+#### Ordenamiento por múltiples campos
+```sql
+-- Ordenar por descripción y marca
+SELECT *
+FROM tb_articulos
+ORDER BY descripcion_ar DESC,  -- Primero por descripción descendente
+         marca_ar;            -- Luego por marca ascendente
+```
+
+#### Ordenamiento por posición de columna
+```sql
+-- Ordenar usando número de columna
+SELECT *
+FROM tb_articulos
+ORDER BY 5;                   -- Ordena por la quinta columna
+```
+
+> [!NOTE] 
+> - ASC (ascendente) es el orden predeterminado
+> - DESC (descendente) debe especificarse explícitamente
+> - Se pueden combinar múltiples campos de ordenamiento
+> - El orden de los campos afecta el resultado final
+> - No es recomendable usar números de columna (menos mantenible)
+
+---
+
+### 2. CLÁUSULA WHERE
+
+La cláusula WHERE permite filtrar registros basándose en condiciones específicas. Se puede usar en SELECT, UPDATE y DELETE.
+
+#### Sintaxis básica
+```sql
+-- Con SELECT
+SELECT * FROM tabla WHERE condición;
+
+-- Con UPDATE
+UPDATE tabla SET campo = valor WHERE condición;
+
+-- Con DELETE
+DELETE FROM tabla WHERE condición;
+```
+
+#### Ejemplos con SELECT
+```sql
+-- Filtrar por valor numérico
+SELECT * 
+FROM tb_articulos
+WHERE stock_actual > 0;          -- Solo artículos con stock positivo
+
+-- Filtrar con múltiples condiciones
+SELECT * 
+FROM tb_articulos
+WHERE stock_actual > 0 
+  AND codigo_ar = 5;            -- Stock positivo y código específico
+```
+
+#### Ejemplos con UPDATE
+```sql
+-- Actualizar registros filtrados
+UPDATE tb_articulos 
+SET stock_actual = stock_actual + 2    -- Incrementa stock en 2
+WHERE marca_ar = 'ESTANDAR';           -- Solo para marca ESTANDAR
+```
+
+#### Ejemplos con DELETE
+```sql
+-- Borrar con condición OR
+DELETE FROM tb_articulos 
+WHERE marca_ar = 'ESTANDAR' 
+   OR marca_ar = 'LENOVO';             -- Borra dos marcas específicas
+
+-- Borrar usando IN (más eficiente)
+DELETE FROM tb_articulos 
+WHERE marca_ar IN ('ESTANDAR', 'LENOVO');  -- Forma alternativa más limpia
+```
+
+> [!NOTE]  
+> - WHERE puede usar condiciones simples o compuestas
+> - Se pueden combinar múltiples condiciones con AND y OR
+> - Soporta operadores de comparación (>, <, =, !=, etc.)
+> - IN es más eficiente que múltiples OR para listas de valores
+> - Sin WHERE, la operación afecta a todos los registros
+
+---
+
+## Crear Vistas
+
+Una vista es una tabla virtual basada en una consulta SQL. Permite simplificar consultas complejas y mejorar la seguridad.
+
+### Sintaxis básica
+```sql
+CREATE VIEW nombre_vista AS
+    subconsulta;
+```
+
+### Ejemplo completo de vista
+```sql
+-- Eliminar vista si existe
+DROP VIEW VISTA_ARTICULOS;    
+
+-- Crear vista de artículos con información relacionada
+CREATE VIEW VISTA_ARTICULOS AS
+SELECT a.codigo_ar,           -- Código del artículo
+       a.descripcion_ar,      -- Descripción del artículo
+       a.marca_ar,            -- Marca del artículo
+       b.descripcion_me,      -- Descripción de la medida
+       c.descripcion_ca,      -- Descripción de la categoría
+       a.stock_actual,        -- Stock disponible
+       a.fecha_registro,      -- Fecha de registro
+       a.activo              -- Estado del artículo
+FROM tb_articulos a          -- Alias 'a' para artículos
+INNER JOIN tb_medidas b      -- Alias 'b' para medidas
+    ON a.codigo_me = b.codigo_me
+INNER JOIN tb_categorias c   -- Alias 'c' para categorías
+    ON a.codigo_ca = c.codigo_ca
+ORDER BY a.codigo_ar;        -- Ordenado por código
+
+-- Consultar la vista
+SELECT * FROM VISTA_ARTICULOS;
+```
+
+> [!NOTE]  
+> - Las vistas no almacenan datos, solo la definición de la consulta
+> - Se pueden usar como si fueran tablas normales
+> - Útiles para simplificar consultas complejas
+> - Ayudan a mantener la seguridad ocultando tablas base
+> - Se pueden crear vistas sobre otras vistas
+
+---
+
+
