@@ -1456,4 +1456,79 @@ END;
 
 ---
 
+## Funciones definidas por el usuario
 
+Las funciones son bloques de código que realizan una tarea específica y retornan un valor.
+
+### 1. Sintaxis básica
+```sql
+CREATE OR REPLACE FUNCTION nombre_funcion(
+    parametro1 tipo_dato, 
+    parametro2 tipo_dato
+)
+RETURN tipo_dato IS
+    -- Declaración de variables
+BEGIN
+    -- Acciones
+    RETURN valor;
+END;
+/
+```
+
+### 2. Ejemplos básicos
+
+#### Función de suma
+```sql
+-- Función que suma dos números
+CREATE OR REPLACE FUNCTION F_SUMAR(
+    p01 NUMBER,           -- Primer número
+    p02 NUMBER            -- Segundo número
+)
+RETURN NUMBER
+AS
+BEGIN
+    RETURN (p01 + p02);  -- Retorna la suma
+END;
+```
+
+#### Función de transformación de texto
+```sql
+-- Función que convierte texto a mayúsculas
+CREATE OR REPLACE FUNCTION F_MAYUSCULA(
+    texto VARCHAR2        -- Texto a convertir
+)
+RETURN VARCHAR2
+AS
+BEGIN
+    RETURN UPPER(texto);  -- Retorna texto en mayúsculas
+END;
+```
+
+### 3. Función con lógica condicional
+```sql
+-- Función que evalúa si una persona es mayor de edad
+CREATE OR REPLACE FUNCTION F_EVALUAR_EDAD(
+    p_Edad NUMBER         -- Edad a evaluar
+)
+RETURN VARCHAR2
+AS
+    V_RETORNO VARCHAR2(50);  -- Variable para almacenar resultado
+BEGIN
+    V_RETORNO := '';        -- Inicializar variable
+    IF p_Edad < 18 THEN 
+        V_RETORNO := 'Eres menor de edad';
+    ELSE
+        V_RETORNO := 'Eres un adulto';
+    END IF;
+    RETURN V_RETORNO;       -- Retorna el mensaje
+END;
+```
+
+> [!NOTE] 
+> - Las funciones siempre deben retornar un valor
+> - Se pueden usar en consultas SELECT
+> - Pueden contener lógica compleja
+> - El tipo de retorno debe coincidir con la declaración
+> - Se pueden usar variables locales para procesamiento intermedio
+
+---
